@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>M_Viewer V2.38</title>
+<title>M_Viewer V2.42</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ════════════════════════════════════════════════════════════
-   M_Viewer — AERO-GRADE PROFESSIONAL THEME  V2.38
+   M_Viewer — AERO-GRADE PROFESSIONAL THEME  V2.42
    Design: 近未来計器盤 / ガラス調 / 高コントラスト / 低疲労
    方針: 全セレクタ互換・JS無変更・状態(hover/active/on/disabled/focus)完全分離
    ════════════════════════════════════════════════════════════ */
@@ -1043,7 +1043,7 @@ button{font-family:inherit}
 
 /* ── ビューブックマーク (v2.35) ── */
 .vbm-grp{display:flex;align-items:center;gap:3px;flex-shrink:0}
-.vbm-lbl{font-size:9px;color:var(--tx3);font-weight:800;letter-spacing:.12em;margin-right:2px;flex-shrink:0}
+.vbm-lbl{font-size:8px;color:#c8daf0;font-weight:800;letter-spacing:.08em;margin-right:3px;flex-shrink:0;text-align:center;line-height:1.25;white-space:nowrap} /* v2.42: 2行・明るい白系 */
 .vbm{
   width:30px;height:24px;border-radius:var(--r-s);
   border:1.5px solid var(--brd);background:var(--srf-low);
@@ -1121,6 +1121,25 @@ button{font-family:inherit}
 }
 @media(pointer:coarse){.vbm-clr{width:32px;height:24px;font-size:9px}.vbm-menu button{height:44px;font-size:14px}}
 
+/* ── その他メニュー (v2.42) ── */
+.more-menu{
+  display:none;position:fixed;z-index:498;
+  background:var(--glass);border:1.5px solid var(--brd-hi);border-radius:var(--r-m);
+  padding:5px;min-width:170px;
+  backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);
+  box-shadow:var(--shadow-3),var(--inset-hi);flex-direction:column;gap:3px;
+}
+.more-menu.on{display:flex}
+.more-menu button{
+  height:40px;padding:0 14px;background:var(--srf);border:1.5px solid var(--brd);
+  color:var(--tx2);border-radius:var(--r-s);font-size:13px;font-weight:700;
+  cursor:pointer;text-align:left;transition:all .12s ease;box-shadow:var(--inset-hi);
+  white-space:nowrap;
+}
+.more-menu button:hover{border-color:var(--brd-hi);color:var(--tx);background:var(--srf-hov)}
+.more-menu button:active{background:var(--acc-deep);border-color:var(--acc2);color:#fff}
+@media(pointer:coarse){.more-menu button{height:48px;font-size:14px}}
+
 /* ── ページ一覧プレビュー ── */
 #preview-overlay{display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.93);flex-direction:column;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
 #preview-overlay.on{display:flex}
@@ -1158,7 +1177,7 @@ button{font-family:inherit}
 </div>
 <div id="hdr">
   <div class="hr">
-    <span class="logo" id="logo-ver">M_Viewer <span style="font-size:10px">V2.38</span></span>
+    <span class="logo" id="logo-ver">M_Viewer <span style="font-size:10px">V2.42</span></span>
     <input type="file" id="fileInput" accept="application/pdf" style="display:none">
     <span id="fnlbl">ファイル未選択</span>
     <div class="vs"></div>
@@ -1166,15 +1185,22 @@ button{font-family:inherit}
     <button class="btn" id="btn-redo">進む</button>
     <button class="btn" id="btn-save">PDF出力</button><!-- v48: on削除(常時アクティブ解消) -->
     <button class="btn" id="btn-backup" title="ZIP バックアップ">バックアップ</button>
-    <button class="btn" id="btn-restore" title="ZIP から復元">復元</button>
     <input type="file" id="restoreInput" accept=".zip" style="display:none">
-    <!-- v47: 説明書を左、計算機を右に変更 -->
-    <button class="btn" id="btn-manual" title="説明書を表示">説明書</button>
-    <div class="vs"></div><!-- v2.28: 計算機を独立グループ化 -->
+    <!-- v2.42: その他メニュー(復元・説明書を集約) -->
+    <div class="pkw">
+      <button class="btn" id="btn-more">その他 ▾</button>
+      <div id="more-menu" class="more-menu">
+        <button id="more-restore">📂 復元（ZIPから）</button>
+        <button id="more-manual">📖 説明書</button>
+      </div>
+    </div>
+    <button class="btn" id="btn-restore" style="display:none">復元</button>
+    <button class="btn" id="btn-manual" style="display:none">説明書</button>
+    <div class="vs"></div>
     <button class="btn" id="calcbtn">計算機</button>
     <div class="vs"></div>
     <span id="vbm-grp" class="vbm-grp">
-      <span class="vbm-lbl">VIEW</span>
+      <span class="vbm-lbl">記憶<br>VIEW</span>
       <button class="vbm" data-vi="0">1</button>
       <button class="vbm" data-vi="1">2</button>
       <button class="vbm" data-vi="2">3</button>
@@ -1271,7 +1297,7 @@ button{font-family:inherit}
   </div>
   <div id="dz">
     <div class="dzi">📄</div>
-    <div class="dzm">M_Viewer V2.38</div>
+    <div class="dzm">M_Viewer V2.42</div>
     <div class="dzs">タップして選択 / ドラッグ＆ドロップ<br>ペン・蛍光ペン: Apple Pencil専用<br>その他ツール・スクロール: 指でも操作可<br>2本指でピンチ拡大縮小 (最大800%)</div>
     <button class="dzb" id="dz-open">PDFを開く</button>
   </div>
@@ -1391,7 +1417,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/p
      2. ファイル名 M_Viewer_vN.html を更新
    それ以外 (meta.json / console / title / dzm / ロゴ左上) は自動反映。
    ============================================================ */
-const APP_VER='V2.38'; /* ← ★ バージョンアップ時はここだけ変える */
+const APP_VER='V2.42'; /* ← ★ バージョンアップ時はここだけ変える */
 
 /* v29: PDF_MAX_DPR を 1.5 → 2.0 に変更
    iPad Retina(DPR=2): canvas物理px = CSS px × 2 = 画面物理px → 完全1:1 → ぼやけ解消
@@ -3790,7 +3816,19 @@ const App=(() => {
 
     get panX(){return panX;},
     get panY(){return panY;},
-    async restoreView(pg,px,py,sc){if(!pdfDoc)return;scale=sc;panX=px;panY=py;await gotoPage(pg,true);_clampPan();_updateTransform();_zlblEl.textContent=Math.round(scale*100)+'%';},
+    async restoreView(pg,px,py,sc){
+      if(!pdfDoc)return;
+      scale=sc;panX=px;panY=py;
+      await gotoPage(pg,true);
+      /* v2.40: renderPageはRAF内でキャンバスリサイズ→_clampPan→内側RAFで_updateTransformを行う。
+         awaitはPDFレンダリング完了まで待つがRAFは待たないため、ここで即_clampPanすると
+         旧キャンバスサイズで誤クランプが起き、ビュー位置がずれる(2回押し問題の根本原因)。
+         二重RAFで「renderPageの全RAF完了」を待ち、その後にpanX/panYを再設定して正しいサイズでクランプする。 */
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      panX=px;panY=py;scale=sc;   /* RAF中にclampで変わった可能性があるため再設定 */
+      _clampPan();_updateTransform();
+      _zlblEl.textContent=Math.round(scale*100)+'%';
+    },
     get docId(){return _docId;},
     /* v16: textX/textY削除 */
     get activeSelSubWin(){return _activeSelSubWin;}, /* ⑤修正: サブ窓選択参照 */
@@ -3808,9 +3846,9 @@ const App=(() => {
    ============================================================ */
 (function _initViewBookmark(){
   const SLOTS=5,KEY='mv_viewbm';
-  /* v2.38: ビュー情報をアプリ全体で共通管理(PDFごとの分離を廃止)。
-     どのPDFを開いていても同じVIEW番号で同じ表示位置へ移動できる。
-     localStorage: [slot0, slot1, slot2, slot3, slot4] のフラット配列。 */
+  /* v2.39: ビュー情報に保存元PDF識別子(docId/fileName)を含め、
+     復帰時は自動でそのPDFのタブへ切り替えてからビューを再現する。
+     異なるPDFを表示中でも、保存したPDFを丸ごと呼び出せる。 */
   let _bm=[null,null,null,null,null];
   let _longTimer=null,_longSlot=-1;
   const menuEl=document.getElementById('vbm-menu');
@@ -3818,35 +3856,63 @@ const App=(() => {
   let _menuSlot=-1;
 
   function _load(){try{const d=JSON.parse(localStorage.getItem(KEY));
-    if(Array.isArray(d)&&d.length===SLOTS){_bm=d;}
-    else if(d&&typeof d==='object'&&!Array.isArray(d)){
-      /* v2.37形式(辞書)からマイグレーション: 最初に見つかった非null配列を採用 */
-      for(const k of Object.keys(d)){if(Array.isArray(d[k])&&d[k].some(x=>x!==null)){_bm=d[k];break;}}
-    }
+    if(Array.isArray(d)&&d.length===SLOTS)_bm=d;
   }catch(_){}}
   function _save(){try{localStorage.setItem(KEY,JSON.stringify(_bm));}catch(_){}}
   _load();
 
+  function _shortName(fn){
+    if(!fn||fn==='(\u65b0\u898f)')return '';
+    const s=fn.replace(/\.pdf$/i,'');
+    return s.length>10?s.slice(0,9)+'\u2026':s;
+  }
   function _render(){
     document.querySelectorAll('.vbm').forEach((btn,i)=>{
       const bk=_bm[i];btn.classList.toggle('on',!!bk);
       if(bk&&App.pdfDoc){
-        const match=(bk.page===App.currentPage&&Math.abs(bk.scale-App.scale)<0.01&&Math.abs(bk.panX-App.panX)<2&&Math.abs(bk.panY-App.panY)<2);
+        /* 現在のPDFかつ同一ビューならactive(緑) */
+        const sameDoc=(bk.docId&&bk.docId===App.docId)||(!bk.docId&&bk.fileName===App.fileName);
+        const match=sameDoc&&bk.page===App.currentPage&&Math.abs(bk.scale-App.scale)<0.01&&Math.abs(bk.panX-App.panX)<2&&Math.abs(bk.panY-App.panY)<2;
         btn.classList.toggle('active',match);
       }else{btn.classList.remove('active');}
       let tip=btn.querySelector('.vbm-tip');
       if(!tip){tip=document.createElement('span');tip.className='vbm-tip';btn.appendChild(tip);}
-      tip.textContent=bk?'P'+bk.page+' '+Math.round(bk.scale*100)+'%':'\u7a7a \u2014 \u30bf\u30c3\u30d7\u3067\u4fdd\u5b58';
+      if(bk){
+        const nm=_shortName(bk.fileName);
+        tip.textContent=(nm?nm+' ':'')+'P'+bk.page+' '+Math.round(bk.scale*100)+'%';
+      }else{tip.textContent='\u7a7a \u2014 \u30bf\u30c3\u30d7\u3067\u4fdd\u5b58';}
     });
   }
   function _saveSlot(i){
     if(!App.pdfDoc){showToast('PDF\u304c\u958b\u3044\u3066\u3044\u307e\u305b\u3093');return;}
-    _bm[i]={page:App.currentPage,panX:App.panX,panY:App.panY,scale:App.scale};
-    _save();_render();showToast('VIEW '+(i+1)+' \u306b\u4fdd\u5b58 (P'+_bm[i].page+' '+Math.round(_bm[i].scale*100)+'%)');
+    _bm[i]={
+      docId:App.docId||null,
+      fileName:App.fileName||'',
+      page:App.currentPage,panX:App.panX,panY:App.panY,scale:App.scale
+    };
+    _save();_render();
+    const nm=_shortName(_bm[i].fileName);
+    showToast('VIEW '+(i+1)+' \u306b\u4fdd\u5b58'+(nm?' ('+nm+' P'+_bm[i].page+')':''));
   }
   async function _restoreSlot(i){
-    const bk=_bm[i];if(!bk||!App.pdfDoc)return;
-    await App.restoreView(bk.page,bk.panX,bk.panY,bk.scale);_render();showToast('VIEW '+(i+1)+' \u306b\u5fa9\u5e30');
+    const bk=_bm[i];if(!bk)return;
+    /* v2.39: 保存元PDFのタブを探し、必要なら自動切替してからビューを復元 */
+    const curDocId=App.docId,curFn=App.fileName;
+    const sameDoc=(bk.docId&&bk.docId===curDocId)||(!bk.docId&&bk.fileName===curFn);
+    if(!sameDoc){
+      /* _sheets(タブ管理の配列)から保存元PDFを検索 */
+      let targetIdx=-1;
+      for(let j=0;j<_sheets.length;j++){
+        const sh=_sheets[j];
+        if(bk.docId&&sh.docId===bk.docId){targetIdx=j;break;}
+        if(!bk.docId&&sh.fileName===bk.fileName){targetIdx=j;break;}
+      }
+      if(targetIdx<0){showToast('\u4fdd\u5b58\u5143\u306ePDF\u304c\u958b\u304b\u308c\u3066\u3044\u307e\u305b\u3093');return;}
+      await switchToSheet(targetIdx);
+    }
+    if(!App.pdfDoc){showToast('PDF\u304c\u8aad\u307f\u8fbc\u307e\u308c\u3066\u3044\u307e\u305b\u3093');return;}
+    await App.restoreView(bk.page,bk.panX,bk.panY,bk.scale);
+    _render();showToast('VIEW '+(i+1)+' \u306b\u5fa9\u5e30');
   }
   function _resetSlot(i){
     _bm[i]=null;_save();_render();showToast('VIEW '+(i+1)+' \u3092\u30ea\u30bb\u30c3\u30c8\u3057\u307e\u3057\u305f');
@@ -3935,7 +4001,7 @@ async function switchToSheet(idx){
   _sheetIdx=idx;const sh=_sheets[_sheetIdx];
   await App.loadState(sh);
   SubWinManager.thawAll(sh.subWinStates,sh.pdfDoc,App.strokes);
-  _renderTabBar();showLoading(false);
+  _renderTabBar();showLoading(false);_schedSessionSave(); /* v2.41 */
 }
 async function addSheet(){
   if(_sheets.length>=MAX_SHEETS){showToast(`タブは最大${MAX_SHEETS}つです`);return;}
@@ -3958,9 +4024,102 @@ async function closeSheetAt(idx){
     await App.loadState(_sheets[_sheetIdx]);
     SubWinManager.thawAll(_sheets[_sheetIdx].subWinStates||[],_sheets[_sheetIdx].pdfDoc,App.strokes);
   }
-  _renderTabBar();showLoading(false);
+  _renderTabBar();showLoading(false);_schedSessionSave(); /* v2.41 */
 }
-App.setPostLoad(()=>{_sheetSync();_checkBkReminder();}); /* v22: バックアップチェック */
+App.setPostLoad(()=>{_sheetSync();_checkBkReminder();_schedSessionSave();}); /* v22: バックアップチェック / v2.41: セッション保存 */
+
+/* v2.41: 複数タブセッションの保存・復元 ============================== */
+let _sesTimer=null;
+function _schedSessionSave(){clearTimeout(_sesTimer);_sesTimer=setTimeout(_saveSession,2000);}
+
+async function _saveSession(){
+  try{
+    _sheetSync(); /* アクティブタブの状態を _sheets へ反映 */
+    if(_sheets[_sheetIdx]?.pdfDoc)_sheets[_sheetIdx].subWinStates=SubWinManager.freezeAll();
+    const pairs=[];const meta={sheets:[],activeIdx:_sheetIdx,ts:Date.now()};
+    for(let i=0;i<_sheets.length;i++){
+      const sh=_sheets[i];
+      if(!sh.pdfDoc||!sh.origBuf)continue;
+      pairs.push(['resume:ses:buf:'+i,sh.origBuf]);
+      meta.sheets.push({
+        bufIdx:i,fileName:sh.fileName,docId:sh.docId||null,
+        curPage:sh.curPage||1,totalPages:sh.totalPages||0,
+        scale:sh.scale||1,panX:sh.panX??16,panY:sh.panY??16,
+        strokes:Utils.cloneStrokes(Utils.pruneEraserStrokes(sh.strokes||{})),
+        subWinStates:sh.subWinStates||[]
+      });
+    }
+    if(!meta.sheets.length)return;
+    /* 古いバッファキーをクリーンアップ(タブ数が減った場合) */
+    for(let k=meta.sheets.length;k<8;k++)pairs.push(['resume:ses:buf:'+k,null]);
+    pairs.push(['resume:session',meta]);
+    await IDBStore.saveNow(pairs);
+  }catch(e){Logger.error('[Session] save failed:',e);}
+}
+function _emergencySessionSave(){
+  try{
+    _sheetSync();
+    if(_sheets[_sheetIdx]?.pdfDoc)_sheets[_sheetIdx].subWinStates=SubWinManager.freezeAll();
+    const pairs=[];const meta={sheets:[],activeIdx:_sheetIdx,ts:Date.now()};
+    for(let i=0;i<_sheets.length;i++){
+      const sh=_sheets[i];
+      if(!sh.pdfDoc||!sh.origBuf)continue;
+      pairs.push(['resume:ses:buf:'+i,sh.origBuf]);
+      meta.sheets.push({bufIdx:i,fileName:sh.fileName,docId:sh.docId||null,
+        curPage:sh.curPage||1,totalPages:sh.totalPages||0,
+        scale:sh.scale||1,panX:sh.panX??16,panY:sh.panY??16,
+        strokes:Utils.cloneStrokes(Utils.pruneEraserStrokes(sh.strokes||{})),
+        subWinStates:sh.subWinStates||[]});
+    }
+    if(!meta.sheets.length)return;
+    for(let k=meta.sheets.length;k<8;k++)pairs.push(['resume:ses:buf:'+k,null]);
+    pairs.push(['resume:session',meta]);
+    IDBStore.saveNow(pairs).catch(()=>{});
+  }catch(_){}
+}
+
+async function _restoreSession(){
+  let meta=null;
+  try{meta=await IDBStore.get('resume:session');}catch(_){return false;}
+  if(!meta||!Array.isArray(meta.sheets)||!meta.sheets.length)return false;
+  /* 30日以上古いデータは無視 */
+  if(typeof meta.ts==='number'&&Date.now()-meta.ts>30*24*3600*1000)return false;
+  showLoading(true);
+  _sheets=[];
+  for(const sd of meta.sheets){
+    let buf=null;
+    try{buf=await IDBStore.get('resume:ses:buf:'+sd.bufIdx);}catch(_){}
+    if(!buf&&sd.docId){try{const d=await IDBStore.get('doc:'+sd.docId);if(d?.originalPdfBytes)buf=new Uint8Array(d.originalPdfBytes);}catch(_){}}
+    if(!buf)continue;
+    if(!(buf instanceof Uint8Array))buf=new Uint8Array(buf);
+    const sh=_emptySheet();
+    sh.origBuf=buf;sh.fileName=sd.fileName;sh.docId=sd.docId;
+    sh.curPage=sd.curPage;sh.totalPages=sd.totalPages;
+    sh.scale=sd.scale;sh.panX=sd.panX;sh.panY=sd.panY;
+    sh.strokes=sd.strokes||{};sh.subWinStates=sd.subWinStates||[];
+    try{sh.pdfDoc=await pdfjsLib.getDocument({data:buf.slice(0)}).promise;sh.totalPages=sh.pdfDoc.numPages;}
+    catch(e){Logger.error('[Session] PDF load fail:',sd.fileName,e);continue;}
+    if(sd.docId){DocMgr.setId(sd.docId);}
+    _sheets.push(sh);
+  }
+  if(!_sheets.length){_sheets.push(_emptySheet());return false;}
+  _sheetIdx=Math.min(meta.activeIdx||0,_sheets.length-1);
+  await App.loadState(_sheets[_sheetIdx]);
+  if(_sheets[_sheetIdx].subWinStates?.length)
+    SubWinManager.thawAll(_sheets[_sheetIdx].subWinStates,_sheets[_sheetIdx].pdfDoc,App.strokes);
+  _renderTabBar();
+  return true;
+}
+
+/* セッション保存のライフサイクルフック */
+['visibilitychange','pagehide','freeze'].forEach(ev=>{
+  (ev==='visibilitychange'?document:window).addEventListener(ev,()=>{
+    if(ev==='visibilitychange'&&document.visibilityState!=='hidden')return;
+    if(_sheets.some(sh=>sh.pdfDoc))_emergencySessionSave();
+  });
+});
+window.addEventListener('beforeunload',()=>{if(_sheets.some(sh=>sh.pdfDoc))_emergencySessionSave();});
+/* ================================================================== */
 
 /* ============================================================
    バックアップ確認ダイアログ
@@ -4807,9 +4966,44 @@ function showLoading(v){document.getElementById('loading').classList.toggle('on'
   _renderTabBar();
   _initToolbar();
   _initCalculator();
+  /* v2.42: その他メニュー */
+  (function(){
+    const moreBtn=document.getElementById('btn-more');
+    const moreMenu=document.getElementById('more-menu');
+    if(!moreBtn||!moreMenu)return;
+    moreBtn.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(moreMenu.classList.contains('on')){moreMenu.classList.remove('on');return;}
+      moreMenu.classList.add('on');
+      const r=moreBtn.getBoundingClientRect();
+      moreMenu.style.left=Math.max(8,Math.min(r.left,window.innerWidth-180))+'px';
+      moreMenu.style.top=(r.bottom+4)+'px';
+    });
+    document.addEventListener('pointerdown',e=>{
+      if(moreMenu.classList.contains('on')&&!moreMenu.contains(e.target)&&e.target!==moreBtn)moreMenu.classList.remove('on');
+    },{capture:true});
+    /* 復元: 既存btn-restoreのclickハンドラをID経由で呼び出す(既存JSが document.getElementById('btn-restore') でリスナー登録済み) */
+    document.getElementById('more-restore').addEventListener('click',()=>{
+      moreMenu.classList.remove('on');
+      document.getElementById('restoreInput').click(); /* 既存の復元ファイル選択を直接起動 */
+    });
+    document.getElementById('more-manual').addEventListener('click',()=>{
+      moreMenu.classList.remove('on');
+      document.getElementById('btn-manual')?.click?.(); /* 既存ボタンが非表示でもclickイベントは発火する */
+    });
+  })();
 
   /* 安全タイムアウト: 6秒後に強制解除 */
   const _safety=setTimeout(()=>{showLoading(false);App._showHome();Logger.warn('[起動] restore タイムアウト');},6000);
+
+  /* v2.41: 複数タブセッション復元を先に試行 */
+  let _sessionRestored=false;
+  try{_sessionRestored=await Promise.race([_restoreSession(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('ses timeout')),8000))]).catch(()=>false);}catch(_){}
+  if(_sessionRestored){
+    clearTimeout(_safety);showLoading(false);
+    _sheetSync();showToast('前回のセッションを復元しました（'+_sheets.length+'タブ）');
+    return;
+  }
 
   let saved=null;
   try{
