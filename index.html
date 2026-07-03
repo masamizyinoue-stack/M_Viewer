@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>M_Viewer V5.12</title>
+<title>M_Viewer V5.18</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ════════════════════════════════════════════════════════════
-   M_Viewer — AERO-GRADE PROFESSIONAL THEME  V5.12 (HUD ORANGE)
+   M_Viewer — AERO-GRADE PROFESSIONAL THEME  V5.18 (HUD ORANGE)
    Design: 近未来計器盤 / ガラス調 / 高コントラスト / 低疲労
    方針: 全セレクタ互換・JS無変更・状態(hover/active/on/disabled/focus)完全分離
    ════════════════════════════════════════════════════════════ */
@@ -1152,6 +1152,10 @@ button{font-family:inherit}
 .more-menu button:hover{border-color:var(--brd-hi);color:var(--tx);background:var(--srf-hov)}
 .more-menu button:active{background:var(--acc-deep);border-color:var(--acc2);color:#ffffff}
 @media(pointer:coarse){.more-menu button{height:48px;font-size:14px}}
+/* V5.17: 入力モード選択 */
+.more-menu .mm-lbl{font-size:10px;color:var(--tx3);letter-spacing:.08em;padding:4px 6px 0;font-weight:700}
+.more-menu .mm-sep{height:1px;background:var(--brd);margin:3px 2px}
+.more-menu button.on{background:var(--acc-deep);border-color:var(--acc2);color:#ffffff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 
 /* ── ページ一覧プレビュー ── */
 #preview-overlay{display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.93);flex-direction:column;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
@@ -1286,23 +1290,27 @@ button{font-family:inherit}
 </div>
 <div id="hdr">
   <div class="hr">
-    <span class="logo" id="logo-ver">M_Viewer <span style="font-size:10px">V5.12</span></span>
+    <span class="logo" id="logo-ver">M_Viewer <span style="font-size:10px">V5.18</span></span>
     <input type="file" id="fileInput" accept="application/pdf" style="display:none">
     <span id="fnlbl">ファイル未選択</span>
     <div class="vs"></div>
+    <!-- V5.16: 設定メニュー(旧その他。復元・説明書を集約) -->
+    <div class="pkw">
+      <button class="btn" id="btn-settings">設定 ▾</button>
+      <div id="more-menu" class="more-menu">
+        <span class="mm-lbl">入力モード</span>
+        <button id="mode-pen" class="mm-mode">✏️ ペンモード</button>
+        <button id="mode-finger" class="mm-mode">✋ 手書きモード</button>
+        <div class="mm-sep"></div>
+        <button id="more-restore">📂 復元（ZIPから）</button>
+        <button id="more-manual">📖 説明書</button>
+      </div>
+    </div>
     <button class="btn" id="btn-undo">戻す</button>
     <button class="btn" id="btn-redo">進む</button>
     <button class="btn" id="btn-save">PDF出力</button><!-- v48: on削除(常時アクティブ解消) -->
     <button class="btn" id="btn-backup" title="ZIP バックアップ">バックアップ</button>
     <input type="file" id="restoreInput" accept=".zip" style="display:none">
-    <!-- v2.42: その他メニュー(復元・説明書を集約) -->
-    <div class="pkw">
-      <button class="btn" id="btn-more">その他 ▾</button>
-      <div id="more-menu" class="more-menu">
-        <button id="more-restore">📂 復元（ZIPから）</button>
-        <button id="more-manual">📖 説明書</button>
-      </div>
-    </div>
     <button class="btn" id="btn-restore" style="display:none">復元</button>
     <button class="btn" id="btn-manual" style="display:none">説明書</button>
     <div class="vs"></div>
@@ -1380,6 +1388,7 @@ button{font-family:inherit}
   <!-- V3.01: 検索バー (3行目) -->
   <div class="hr" id="search-bar">
     <input id="search-input" class="srch-in" type="text" placeholder="文字を検索..." autocomplete="off" spellcheck="false">
+    <button class="btn srch-nav" id="search-list-btn" title="候補一覧を再表示">一覧</button><!-- V5.14 -->
     <span id="search-count" class="srch-cnt"></span>
     <button class="btn srch-nav" id="search-prev" title="前へ (Shift+Enter)">◀</button>
     <button class="btn srch-nav" id="search-next" title="次へ (Enter)">▶</button>
@@ -1418,7 +1427,7 @@ button{font-family:inherit}
   </div>
   <div id="dz">
     <div class="dzi">📄</div>
-    <div class="dzm">M_Viewer V5.12</div>
+    <div class="dzm">M_Viewer V5.18</div>
     <div class="dzs">タップして選択 / ドラッグ＆ドロップ<br>ペン・蛍光ペン: Apple Pencil専用<br>その他ツール・スクロール: 指でも操作可<br>2本指でピンチ拡大縮小 (最大800%)</div>
     <button class="dzb" id="dz-open">PDFを開く</button>
   </div>
@@ -1544,7 +1553,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/p
      2. ファイル名 M_Viewer_vN.html を更新
    それ以外 (meta.json / console / title / dzm / ロゴ左上) は自動反映。
    ============================================================ */
-const APP_VER='V5.12'; /* ← ★ バージョンアップ時はここだけ変える */
+const APP_VER='V5.18'; /* ← ★ バージョンアップ時はここだけ変える */
 
 /* v29: PDF_MAX_DPR を 1.5 → 2.0 に変更
    iPad Retina(DPR=2): canvas物理px = CSS px × 2 = 画面物理px → 完全1:1 → ぼやけ解消
@@ -1555,6 +1564,7 @@ const APP_VER='V5.12'; /* ← ★ バージョンアップ時はここだけ変�
    低倍率(100-200%)は PDF_MAX_DPR=2.0 で v28 より高品質を維持 */
 const MAX_CANVAS=3600,MAX_SCALE=8,SAVE_DELAY=1200,PDF_MAX_DPR=2.0;
 const HI_DPR=Math.min(window.devicePixelRatio||1,2); /* V5.03: 書込みレイヤ・サブ窓用DPR(Retina対応) */
+const IS_PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* V5.13: PC(マウス・キーボード)環境判定。iPad(タッチ)はfalse */
 const MAX_SUBWIN=2,MAX_STROKES_PER_PAGE=500;
 const SW_COLORS=['#f07800','#00a0ff','#00c060','#ff40a0','#c0c000'];
 const SW_FILLS=['rgba(240,120,0,.12)','rgba(0,160,255,.12)','rgba(0,200,80,.12)','rgba(255,80,160,.12)','rgba(200,200,0,.12)'];
@@ -3060,6 +3070,7 @@ const App=(() => {
   let pinch=null,panSt=null;
   /* v61: ペン系ツール用 パン候補点 (閾値超過後にパン開始) */
   let _panCandidate=null;
+  let _fingerPend=null,_fingerPendTimer=null; /* V5.18: 手書きモードで二本指ジェスチャと衝突しないための保留状態 */
   const PEN_PAN_THRESHOLD=15; /* ペン系ツールでパン開始するまでの移動距離(px) */
   let _stylusDrawing=false; /* v2.34: Apple Pencil/スタイラス描画中フラグ — trueの間は指タッチを完全遮断 */
   let _gestureRAF=null; /* v10: ジェスチャーRAFフラグ */
@@ -3089,6 +3100,17 @@ const App=(() => {
   let _strokeColor='#cc2020',_strokeSize=3;
   const _toolSizes={...TOOL_DEFAULT_SIZES};
   const _penColors={pen:'#cc2020',hl:'#ffd700'};
+
+  /* V5.17: 入力モード(ペン/手書き)。iPad向け設定。localStorageに永続化 */
+  const _INPUT_MODE_KEY='mv_input_mode';
+  let _inputMode='pen';
+  try{const m=localStorage.getItem(_INPUT_MODE_KEY);if(m==='finger')_inputMode='finger';}catch(_){}
+  function setInputMode(m){
+    _inputMode=(m==='finger')?'finger':'pen';
+    try{localStorage.setItem(_INPUT_MODE_KEY,_inputMode);}catch(_){}
+    document.getElementById('mode-pen')?.classList.toggle('on',_inputMode==='pen');
+    document.getElementById('mode-finger')?.classList.toggle('on',_inputMode==='finger');
+  }
 
   /* 選択コンテキスト */
   let _activeSelSubWin=null;
@@ -3332,6 +3354,9 @@ const App=(() => {
     if(e.touches.length>=2){
       /* v27: sub作成中は2本指ピンチをブロック → ドラッグ継続優先 */
       if(_activeTool==='sub'&&isDrawing)return;
+      /* V5.17: 手書きモードで指描画中(pen/hl/eraser)に指が増えても誤ってピンチへ切替えない(ストローク保護) */
+      if(_inputMode==='finger'&&isDrawing&&['pen','hl','eraser'].includes(_activeTool))return;
+      if(_fingerPend){clearTimeout(_fingerPendTimer);_fingerPendTimer=null;_fingerPend=null;} /* V5.18: 保留中の描画をキャンセルしピンチへ */
       const hasSt=Array.from(e.touches).some(t=>t.touchType==='stylus');
       if(hasSt)return; /* v10: Pencil含む場合のみ早期リターン */
       isDrawing=false;curStroke=null;panSt=null;_startPinch(e.touches);return;
@@ -3342,12 +3367,22 @@ const App=(() => {
     if(_activeTool!=='sub'){
       if(Utils.isPalmContact(t))return;
       if(!_isOnCanvas(t)){_startPan(t);return;}
-      const needPen=['pen','hl'].includes(_activeTool);
+      const needPen=['pen','hl'].includes(_activeTool)&&_inputMode!=='finger'; /* V5.17: 手書きモードでは指もそのまま描画対象 */
       if(needPen&&t.touchType!=='stylus'){
         /* v61: 描画中(Pencil使用中)は指パンを完全禁止。
            非描画中でも PEN_PAN_THRESHOLD 分移動後にパン開始(誤反応防止) */
         if(isDrawing)return; /* 描画中は指タッチを無視 */
         _panCandidate={x0:t.clientX,y0:t.clientY,touch:t};return;
+      }
+      /* V5.18: 手書きモードのpen/hl/eraserは即描画せず約70ms保留。
+         その間に2本目の指が触れたら二本指ジェスチャへ回し、動けば即座に描画開始(遅延感なし)。 */
+      if(_inputMode==='finger'&&t.touchType!=='stylus'&&['pen','hl','eraser'].includes(_activeTool)){
+        _fingerPend={t};
+        _fingerPendTimer=setTimeout(()=>{
+          if(_fingerPend){_startDraw({touches:[_fingerPend.t]});_fingerPend=null;}
+          _fingerPendTimer=null;
+        },70);
+        return;
       }
     }
     /* v2.34: スタイラス判定 — 書き込み開始時にフラグを立てる */
@@ -3369,6 +3404,17 @@ const App=(() => {
       }
       return;
     }
+    /* V5.18: 保留中の指描画 — 動きがあれば2本目は来ないと判断し即座に確定(体感遅延なし)。
+       2本目が到達済み(タッチ数2以上)なら描画せず保留のみ破棄(ピンチはtouchstart側で開始済み) */
+    if(_fingerPend){
+      if(e.touches.length>=2){clearTimeout(_fingerPendTimer);_fingerPendTimer=null;_fingerPend=null;}
+      else{
+        clearTimeout(_fingerPendTimer);_fingerPendTimer=null;
+        const pt=_fingerPend.t;_fingerPend=null;
+        _startDraw({touches:[pt]});_moveDraw(e);
+      }
+      return;
+    }
     /* v27: sub作成中はピンチを無効化 → ドラッグを中断させない */
     if(e.touches.length>=2&&pinch&&!(_activeTool==='sub'&&isDrawing)){_movePinch(e.touches);return;}
     const t=e.touches[0];
@@ -3385,6 +3431,12 @@ const App=(() => {
   },{passive:false});
   caEl.addEventListener('touchend',e=>{
     _panCandidate=null; /* v61: タッチ終了で候補クリア */
+    if(_fingerPend){ /* V5.18: 保留中に指が離れた=タップ。点として確定 */
+      clearTimeout(_fingerPendTimer);_fingerPendTimer=null;
+      const pt=_fingerPend.t;_fingerPend=null;
+      _startDraw({touches:[pt]});_endDraw(e);
+      return;
+    }
     /* v2.34: スタイラス描画中のtouchend — スタイラスが離れた場合のみ描画完了 */
     if(_stylusDrawing){
       const wasSty=Array.from(e.changedTouches).some(t=>t.touchType==='stylus');
@@ -3403,20 +3455,27 @@ const App=(() => {
      以後のタッチが無反応/誤動作になる問題を修正 */
   caEl.addEventListener('touchcancel',e=>{
     _panCandidate=null;
+    if(_fingerPend){clearTimeout(_fingerPendTimer);_fingerPendTimer=null;_fingerPend=null;} /* V5.18 */
     _stylusDrawing=false;
     if(pinch&&e.touches.length<2){_endPinch();return;}
     if(panSt){panSt=null;return;}
     if(isDrawing)_endDraw(e);
   });
-  caEl.addEventListener('mousedown',e=>{if(pdfDoc){_cancelInertia();_startDraw(e);}});
+  caEl.addEventListener('mousedown',e=>{
+    if(!pdfDoc)return;
+    _cancelInertia();
+    if(IS_PC&&(e.button===1||(_spaceHeld&&e.button===0))){ /* V5.13②: 中ボタン or Space+左でパン */
+      e.preventDefault();caEl.style.cursor='grabbing';_startPan(e);return;
+    }
+    if(IS_PC&&e.button!==0)return; /* V5.13: 右/中ボタンでは描画を開始しない */
+    _startDraw(e);
+  });
   caEl.addEventListener('mousemove',e=>{if(isDrawing)_moveDraw(e);else if(panSt)_movePan(e);});
-  caEl.addEventListener('mouseup',e=>{_stylusDrawing=false;if(isDrawing)_endDraw(e);else if(panSt)_endPan(e);});  /* v2.34: フォールバックで_stylusDrawingクリア */
-  caEl.addEventListener('wheel',e=>{
-    if(!Logger.flags.wheelZoom){e.preventDefault();return;}
-    if(!pdfDoc)return;e.preventDefault();
-    const r=e.deltaY<0?1.15:.87;
+  caEl.addEventListener('mouseup',e=>{_stylusDrawing=false;if(isDrawing)_endDraw(e);else if(panSt){_endPan(e);caEl.style.cursor=_spaceHeld?'grab':'';}});  /* v2.34: フォールバックで_stylusDrawingクリア / V5.13: カーソル復帰 */
+  /* V5.13: 指定クライアント座標を不動点にズーム(従来wheel処理と同一の式・150msデバウンス精細化) */
+  function _zoomAtPoint(cx,cy,r){
     const cr=caEl.getBoundingClientRect();
-    const vx=e.clientX-cr.left,vy=e.clientY-cr.top;
+    const vx=cx-cr.left,vy=cy-cr.top;
     const pdfX=(vx-panX)/scale,pdfY=(vy-panY)/scale;
     scale=Math.max(.2,Math.min(MAX_SCALE,scale*r));
     panX=vx-pdfX*scale;panY=vy-pdfY*scale;_clampPan();
@@ -3424,7 +3483,62 @@ const App=(() => {
     cwEl.style.transformOrigin='0 0';cwEl.style.transform=`translate(${panX}px,${panY}px) scale(${pEZ})`;
     _zlblEl.textContent=Math.round(scale*100)+'%'; /* v17: キャッシュ変数 */
     clearTimeout(_wheelTimer);_wheelTimer=setTimeout(()=>renderPage(curPage),150);
+  }
+  caEl.addEventListener('wheel',e=>{
+    if(!Logger.flags.wheelZoom){e.preventDefault();return;}
+    if(!pdfDoc)return;e.preventDefault();
+    const k=e.deltaMode===1?16:e.deltaMode===2?caEl.clientHeight:1; /* 行/ページ単位ホイール対応 */
+    if(IS_PC&&!(e.ctrlKey||e.metaKey)){
+      /* V5.13①: ホイール=縦スクロール / Shift+ホイール=横スクロール */
+      let dx=e.deltaX*k,dy=e.deltaY*k;
+      if(e.shiftKey&&Math.abs(dx)<1){dx=dy;dy=0;}
+      panX-=dx;panY-=dy;_clampPan();
+      if(!_gestureRAF)_gestureRAF=requestAnimationFrame(_applyGestureTransform);
+      return;
+    }
+    let r;
+    if(IS_PC){ /* V5.13①: Ctrl+ホイール=カーソル中心ズーム。1ノッチ(deltaY≒100)で約±2.5%、
+                  高速回転時も1イベントあたり±3ノッチ相当(約±7.7%)に制限 */
+      const n=Math.max(-3,Math.min(3,(e.deltaY*k)/100));
+      r=Math.pow(1.025,-n);
+    }else{
+      r=e.deltaY<0?1.15:.87; /* タッチ環境(iPad+トラックパッド等)は従来通り */
+    }
+    _zoomAtPoint(e.clientX,e.clientY,r);
   },{passive:false});
+
+  /* ── V5.13: PC専用操作(iPadでは一切登録しない) ── */
+  let _spaceHeld=false;
+  if(IS_PC){
+    /* ②: Space押下中は手のひらツール(左ドラッグでパン)。離すと元のツールへ自動復帰 */
+    document.addEventListener('keydown',e=>{
+      const t=e.target,tag=(t&&t.tagName||'').toLowerCase();
+      const typing=tag==='input'||tag==='textarea'||(t&&t.isContentEditable);
+      if(e.code==='Space'&&!typing){
+        if(!_spaceHeld){_spaceHeld=true;if(!panSt)caEl.style.cursor='grab';}
+        e.preventDefault(); /* スクロール/ボタン誤発火の防止 */
+        return;
+      }
+      /* ③: ショートカット */
+      if(!(e.ctrlKey||e.metaKey)||typing||!pdfDoc)return;
+      const cr=caEl.getBoundingClientRect(),cx=cr.left+cr.width/2,cy=cr.top+cr.height/2;
+      if(e.key==='0'){e.preventDefault();fit();}
+      else if(e.key==='1'){e.preventDefault();_zoomAtPoint(cx,cy,1/scale);}
+      else if(e.key==='+'||e.key==='='){e.preventDefault();_zoomAtPoint(cx,cy,1.2);}
+      else if(e.key==='-'){e.preventDefault();_zoomAtPoint(cx,cy,1/1.2);}
+    });
+    document.addEventListener('keyup',e=>{
+      if(e.code==='Space'){_spaceHeld=false;if(!panSt)caEl.style.cursor='';}
+    });
+    /* ④: ダブルクリック位置を中心に200%(すでに約200%以上なら全体表示へ) */
+    caEl.addEventListener('dblclick',e=>{
+      if(!pdfDoc)return;e.preventDefault();
+      if(scale<1.95)_zoomAtPoint(e.clientX,e.clientY,2/scale);
+      else fit();
+    });
+    /* キャンバス外でボタンを離した際のパン取り残し防止 */
+    window.addEventListener('mouseup',e=>{if(panSt){_endPan(e);caEl.style.cursor=_spaceHeld?'grab':'';}});
+  }
 
   /* --- ピンチ --- */
   function _pinchDist(t){const dx=t[1].clientX-t[0].clientX,dy=t[1].clientY-t[0].clientY;return Math.sqrt(dx*dx+dy*dy);}
@@ -4145,7 +4259,7 @@ const App=(() => {
     gotoPage,fit,undo,redo,deleteSelected,copySelected,pasteClipboard,closeFile,redraw,loadPDF, /* v44, v2.09 */
     updateUndoRedoBtn:_updateUndoRedoBtn, /* v2.10 */
     saveState,loadState,restore,downloadBackup,restoreFromZip,exportPDF, /* v21: showHome削除 */
-    setTool,setColor,setSize, /* v16: setShape削除 */
+    setTool,setColor,setSize,setInputMode,get inputMode(){return _inputMode;}, /* v16: setShape削除 / V5.17: 入力モード */
     _clipboardSet(arr){_clipboard=arr;showToast('📋 コピーしました');}, /* v44: SubWin用 */
     get currentTool(){return _activeTool;}, /* v16: currentShape削除 */
     get selMode(){return _selMode;},
@@ -4668,10 +4782,12 @@ function _initToolbar(){
   try{_defs=JSON.parse(localStorage.getItem(_DEF_KEY)||'{}')||{};}catch(_){_defs={};}
   function _persistDefaults(){
     const t=App.currentTool;
-    if(t!=='pen'&&t!=='hl'&&t!=='eraser')return;
-    const e=_defs[t]||(_defs[t]={});
-    if(t!=='eraser')e.c=App.strokeColor;
-    e.s=App.strokeSize;
+    _defs._lastTool=t; /* V5.15: 直前に使用していたツールも保存(色/太さの既定値と同じキーに同梱) */
+    if(t==='pen'||t==='hl'||t==='eraser'){
+      const e=_defs[t]||(_defs[t]={});
+      if(t!=='eraser')e.c=App.strokeColor;
+      e.s=App.strokeSize;
+    }
     try{localStorage.setItem(_DEF_KEY,JSON.stringify(_defs));}catch(_){}
   }
   function _restoreDefaults(){
@@ -4683,7 +4799,9 @@ function _initToolbar(){
       if(d.hl){App.setTool('hl');if(okC(d.hl.c))App.setColor(d.hl.c);if(okS(d.hl.s))App.setSize(+d.hl.s);}
       if(d.pen){App.setTool('pen');if(okC(d.pen.c))App.setColor(d.pen.c);if(okS(d.pen.s))App.setSize(+d.pen.s);}
     }catch(_){}
-    App.setTool('pen');   /* 初期ツールはペン(従来どおり) */
+    /* V5.15: 前回選択していたツールを復元(未保存/不正値ならペン=従来どおり) */
+    const _lt=_defs._lastTool;
+    App.setTool(['pen','hl','eraser','select','sub'].includes(_lt)?_lt:'pen');
   }
   /* 12色ピッカー */
   function _renderCpop(){
@@ -5333,7 +5451,7 @@ function showLoading(v){document.getElementById('loading').classList.toggle('on'
   _initCalculator();
   /* v2.42: その他メニュー */
   (function(){
-    const moreBtn=document.getElementById('btn-more');
+    const moreBtn=document.getElementById('btn-settings'); /* V5.16: 設定ボタンへ改称 */
     const moreMenu=document.getElementById('more-menu');
     if(!moreBtn||!moreMenu)return;
     moreBtn.addEventListener('click',e=>{
@@ -5356,6 +5474,10 @@ function showLoading(v){document.getElementById('loading').classList.toggle('on'
       moreMenu.classList.remove('on');
       document.getElementById('btn-manual')?.click?.(); /* 既存ボタンが非表示でもclickイベントは発火する */
     });
+    /* V5.17: 入力モード切替(即時反映・メニューは開いたまま選択状態を確認できるようにする) */
+    document.getElementById('mode-pen').addEventListener('click',()=>App.setInputMode('pen'));
+    document.getElementById('mode-finger').addEventListener('click',()=>App.setInputMode('finger'));
+    App.setInputMode(App.inputMode); /* 起動時: 保存済みモードをボタン表示へ反映 */
   })();
 
   /* 安全タイムアウト: 6秒後に強制解除 */
@@ -5960,6 +6082,21 @@ const TextSearch = (() => {
     if (prevBtn) prevBtn.addEventListener('click', () => { prev(); }, { passive: true });
     if (nextBtn) nextBtn.addEventListener('click', () => { next(); }, { passive: true });
 
+    /* V5.14: 一覧ボタン=候補一覧の再表示 */
+    const listBtn = document.getElementById('search-list-btn');
+    if (listBtn) listBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      const raw = _inputEl ? _inputEl.value : '';
+      const norm = _normalize(raw);
+      if (!norm) return;                                /* 空欄: 何もしない(従来どおり) */
+      if (norm !== _query || raw !== _rawQuery) {       /* 文字が変わっていれば現時点の文字で再検索 */
+        clearTimeout(_debTimer);
+        _execSearch();                                  /* 完了時に既存フローで_openList()される */
+      } else {
+        _openList();                                    /* 同一クエリなら即再表示 */
+      }
+    }, { passive: false });
+
     const liClose = document.getElementById('srch-li-close');
     if (liClose) liClose.addEventListener('click', e => {
       e.stopPropagation(); _closeList();
@@ -5980,7 +6117,7 @@ const TextSearch = (() => {
 
     document.addEventListener('pointerdown', e => {
       if (!_listPopEl || !_listPopEl.classList.contains('on')) return;
-      if (!_listPopEl.contains(e.target) && e.target !== _inputEl) _closeList(); /* V5.03: 一覧ボタン廃止に伴い判定変更 */
+      if (!_listPopEl.contains(e.target) && e.target !== _inputEl && e.target.id !== 'search-list-btn') _closeList(); /* V5.14: 一覧ボタンは閉じ判定から除外 */
     }, { capture: true, passive: true });
 
     const pdfCvs = document.getElementById('pdfCvs');
