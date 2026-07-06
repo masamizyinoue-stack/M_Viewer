@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
-<title>M_Viewer V5.30</title>
+<title>M_Viewer V6.01</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 /* ════════════════════════════════════════════════════════════
-   M_Viewer — AERO-GRADE PROFESSIONAL THEME  V5.30 (HUD ORANGE)
+   M_Viewer — AERO-GRADE PROFESSIONAL THEME  V6.01 (HUD ORANGE)
    Design: 近未来計器盤 / ガラス調 / 高コントラスト / 低疲労
    方針: 全セレクタ互換・JS無変更・状態(hover/active/on/disabled/focus)完全分離
    ════════════════════════════════════════════════════════════ */
@@ -1209,11 +1209,12 @@ button{font-family:inherit}
 /* ── 文字検索バー (V3.01) ── */
 #search-bar{flex-shrink:0;gap:6px;padding:0 8px;overflow-x:auto;-webkit-overflow-scrolling:touch;overflow-y:hidden;display:none;height:38px;align-items:center;border-top:1px solid rgba(96,64,40,.55);background:linear-gradient(180deg,rgba(20,12,8,.98)0%,rgba(16,8,4,.98)100%)}
 #search-bar::-webkit-scrollbar{display:none}
+#search-in-wrap{position:relative;flex:1;min-width:120px;max-width:260px;display:flex;align-items:center;}
 .srch-in{
-  flex:1;min-width:120px;max-width:260px;height:28px;
+  flex:1;min-width:0;height:28px;
   background:var(--srf-low);
   border:1.5px solid var(--brd-hi);border-radius:var(--r-s);
-  color:var(--tx);font-size:13px;padding:0 9px;
+  color:var(--tx);font-size:13px;padding:0 26px 0 9px;
   font-family:var(--font);
   box-shadow:inset 0 1px 4px rgba(0,0,0,.65);
   transition:border-color .15s,box-shadow .15s;
@@ -1289,6 +1290,8 @@ button{font-family:inherit}
 #lg,.dzm{letter-spacing:.1em}
 #zlbl,#pgn,.srch-cnt,.srch-li-pg{font-family:var(--mono)}
 .hr .btn{letter-spacing:.04em}
+#search-clear{position:absolute;right:3px;top:50%;transform:translateY(-50%);width:20px;height:20px;min-width:0;padding:0;font-size:12px;line-height:1;border-radius:50%;background:var(--pan2);color:var(--tx2);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;}
+#search-clear:hover{color:var(--tx);border-color:var(--brd-hi)}
 </style>
 </head>
 <body>
@@ -1307,7 +1310,7 @@ button{font-family:inherit}
 </div>
 <div id="hdr">
   <div class="hr">
-    <span class="logo" id="logo-ver">M_Viewer <span style="font-size:10px">V5.30</span></span>
+    <span class="logo" id="logo-ver">M_Viewer <span style="font-size:10px">V6.01</span></span>
     <input type="file" id="fileInput" accept="application/pdf" style="display:none">
     <span id="fnlbl">ファイル未選択</span>
     <div class="vs"></div>
@@ -1404,7 +1407,10 @@ button{font-family:inherit}
   </div>
   <!-- V3.01: 検索バー (3行目) -->
   <div class="hr" id="search-bar">
-    <input id="search-input" class="srch-in" type="text" placeholder="文字を検索..." autocomplete="off" spellcheck="false">
+    <span id="search-in-wrap">
+      <input id="search-input" class="srch-in" type="text" placeholder="文字を検索..." autocomplete="off" spellcheck="false">
+      <button id="search-clear" title="検索文字を消去">✕</button><!-- V5.55: 入力欄内の右側に配置 -->
+    </span>
     <button class="btn srch-nav" id="search-list-btn" title="候補一覧を再表示">一覧</button><!-- V5.14 -->
     <span id="search-count" class="srch-cnt"></span>
     <button class="btn srch-nav" id="search-prev" title="前へ (Shift+Enter)">◀</button>
@@ -1444,7 +1450,7 @@ button{font-family:inherit}
   </div>
   <div id="dz">
     <div class="dzi">📄</div>
-    <div class="dzm">M_Viewer V5.30</div>
+    <div class="dzm">M_Viewer V6.01</div>
     <div class="dzs">タップして選択 / ドラッグ＆ドロップ<br>ペン・蛍光ペン: Apple Pencil専用<br>その他ツール・スクロール: 指でも操作可<br>2本指でピンチ拡大縮小 (最大800%)</div>
     <button class="dzb" id="dz-open">PDFを開く</button>
   </div>
@@ -1540,7 +1546,7 @@ button{font-family:inherit}
     <span id="pv-title">ページ一覧</span>
     <span style="flex:1"></span>
     <button id="pv-fav-btn" title="お気に入りのみ表示">★のみ</button>
-    <button id="pv-detail-btn" title="右下(詳細番号欄)を拡大表示">詳細番号モード</button><!-- V5.19 -->
+    <button id="pv-detail-btn" title="右下(図面番号欄)を拡大表示">図面番号モード</button><!-- V5.19 -->
     <span id="pv-detail-cal"><!-- V5.28: 切り出し範囲(幅・高さ)+倍率を個別に手動調整(その場で±→自動記憶) -->
       <span class="dc-grp"><span class="dc-lbl">幅</span><button id="pv-detail-w-minus">－</button><span id="pv-detail-w-pct" class="dc-pct">10%</span><button id="pv-detail-w-plus">＋</button></span>
       <span class="dc-grp"><span class="dc-lbl">高さ</span><button id="pv-detail-h-minus">－</button><span id="pv-detail-h-pct" class="dc-pct">10%</span><button id="pv-detail-h-plus">＋</button></span>
@@ -1576,7 +1582,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/p
      2. ファイル名 M_Viewer_vN.html を更新
    それ以外 (meta.json / console / title / dzm / ロゴ左上) は自動反映。
    ============================================================ */
-const APP_VER='V5.30'; /* ← ★ バージョンアップ時はここだけ変える */
+const APP_VER='V6.01'; /* ← ★ バージョンアップ時はここだけ変える */
 
 /* v29: PDF_MAX_DPR を 1.5 → 2.0 に変更
    iPad Retina(DPR=2): canvas物理px = CSS px × 2 = 画面物理px → 完全1:1 → ぼやけ解消
@@ -1587,6 +1593,142 @@ const APP_VER='V5.30'; /* ← ★ バージョンアップ時はここだけ変�
    低倍率(100-200%)は PDF_MAX_DPR=2.0 で v28 より高品質を維持 */
 const MAX_CANVAS=3600,MAX_SCALE=8,SAVE_DELAY=1200,PDF_MAX_DPR=2.0;
 const HI_DPR=Math.min(window.devicePixelRatio||1,2); /* V5.03: 書込みレイヤ・サブ窓用DPR(Retina対応) */
+
+/* ============================================================
+   V5.31: PdfRenderCore — PDF.js render呼び出し+RenderTaskキャンセルの共通処理。
+   サブ窓(SubWin)が個別に持つ「offset viewport生成→render→cancel処理」パターンを
+   汎用化したもの。既存のSubWin.render()自体は無変更(回帰リスク回避のため)だが、
+   今回新設するHiResView、および将来的なSubWin側の置き換えの両方から使える構造にしてある。
+   ============================================================ */
+const PdfRenderCore=(() => {
+  /* V5.50バグ修正: 従来のrenderRegion()は「render完了後」にtaskを返していたため、
+     呼び出し側がその完了を待っている最中に別の呼び出しが来た場合、まだ完了していない
+     このtaskをキャンセルする手段が無く、同じcanvasへ2つのrender()が同時に走って
+     PDF.jsが例外を投げる不具合があった("Cannot use the same canvas..." エラー)。
+     start(同期・taskを即座に返す)とfinish(そのtaskの完了を待つ)を分離し、
+     呼び出し側が「今動いているtask」を即座に把握・キャンセルできるようにする。 */
+  function start(page,opts,canvas,size){
+    const vp=page.getViewport(opts);
+    if(size){canvas.width=size.w;canvas.height=size.h;}
+    else{canvas.width=Math.round(vp.width);canvas.height=Math.round(vp.height);}
+    const ctx=canvas.getContext('2d');
+    ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+    const task=page.render({canvasContext:ctx,viewport:vp});
+    return{vp,task};
+  }
+  async function finish(task){
+    try{
+      await task.promise;
+      return{cancelled:false};
+    }catch(e){
+      if(e&&(e.name==='RenderingCancelledException'||e.type==='RenderingCancelledException')){
+        return{cancelled:true};
+      }
+      throw e;
+    }
+  }
+  return{start,finish};
+})();
+
+/* ============================================================
+   HiResView — メイン画面の「表示範囲のみ高解像度描画」を担当する独立モジュール。
+   _currentVP・_getPdfPos・redraw等の既存座標系には一切関与しない(読み書きしない)。
+   ズーム/パン確定後にのみ、画面に見えている範囲だけを高解像度描画し、#ca直下
+   (#cwの外・拡大されない場所)に配置する。#cwはwill-change:transformにより独立した
+   重なり層を作るため、hiResCvs表示中はpdfCvsと#cw自身の背景を透明化して見せる。 */
+const HiResView=(() => {
+  let cvs=null,ver=0,task=null,_pdfCvsRef=null,_cwRef=null,_annCvsRef=null,_scratch=null;
+  function _ensure(caEl){
+    if(cvs)return cvs;
+    cvs=document.createElement('canvas');
+    cvs.id='hiResCvs';
+    cvs.style.cssText='position:absolute;left:0;top:0;pointer-events:none;display:none;';
+    const cw=caEl.querySelector('#cw');
+    caEl.insertBefore(cvs, cw); /* #cwより前(DOM順で下)に配置。annCvs/ovlCvs(#cw内)は常に前面のまま */
+    _pdfCvsRef=caEl.querySelector('#pdfCvs');
+    _annCvsRef=caEl.querySelector('#annCvs');
+    _cwRef=cw;
+    return cvs;
+  }
+  function hide(){
+    /* V5.47バグ修正: hide()は画面上の表示を消すだけで、進行中の裏側の描画処理(renderVisible)
+       自体は止めていなかった。そのため記憶VIEW等でhide()を呼んだ直後に、古い位置/サイズを
+       持ったまま裏で進行中だった描画が完了し、後から勝手に再表示されてしまう(位置ズレ・
+       伸び・回転して見える等の症状)不具合があった。hide()でもverを進めて処理中の
+       renderVisible()を確実に無効化し、レンダリングタスクもキャンセルする。 */
+    ver++;
+    if(task){try{task.cancel();}catch(_){}task=null;}
+    if(cvs)cvs.style.display='none';
+    if(_pdfCvsRef)_pdfCvsRef.style.visibility=''; /* pdfCvsを再度見せる */
+    if(_annCvsRef)_annCvsRef.style.visibility=''; /* V5.51: 書込みレイヤーも再度見せる */
+    if(_cwRef)_cwRef.style.background=''; /* #cwの白背景を元に戻す */
+  }
+  function cancel(){hide();} /* V5.47: hide()に統合(役割が重複していたため) */
+  function reset(){ /* V5.60バグ修正: ファイルを閉じる/空タブへ切替える際に呼び、状態を確実にクリアする */
+    hide();
+  }
+  /* rectS1: {x1,y1,x2,y2} = クロップ範囲をscale=1基準(canvas-pixel-at-scale1)で表したもの(offsetX/Y計算用)
+     hiScale: 実際にレンダリングする倍率(= 現在のユーザー倍率×DPR)
+     finalBox: {left,top,width,height} = 画面上(#ca基準)での最終表示位置・サイズ */
+  async function renderVisible(caEl,page,rectS1,hiScale,finalBox,strokeArr,keepAnnLive){
+    const myVer=++ver;
+    const c=_ensure(caEl);
+    const rasterW=Math.max(1,Math.round((rectS1.x2-rectS1.x1)*hiScale));
+    const rasterH=Math.max(1,Math.round((rectS1.y2-rectS1.y1)*hiScale));
+    /* V5.50バグ修正: 前回のtaskがまだ動いていれば、新しい描画を始める前に必ずキャンセルする。
+       さらに、新しいtaskを開始した瞬間(同期的)にtask変数を更新するため、後続の呼び出しが
+       確実に「今動いている方」をキャンセルできる(これが無いと同じcanvasへ二重にrenderが
+       走りPDF.jsが例外を投げていた)。 */
+    if(task){try{task.cancel();}catch(_){}task=null;}
+    /* V5.56バグ修正: 従来は表示中のcanvas(c)へ直接renderしていたため、書込み確定のたびに
+       canvas.width設定でその場が一瞬クリアされ、画面がチラついていた(特に書込み中は
+       stroke:added毎に再描画されるため頻発した)。見えない別canvas(_scratch)へ描いてから、
+       完成後に一度だけ表示用canvasへ転写することで、表示中の内容が途切れないようにする。 */
+    if(!_scratch)_scratch=document.createElement('canvas');
+    const started=PdfRenderCore.start(page,{
+      scale:hiScale,offsetX:-rectS1.x1*hiScale,offsetY:-rectS1.y1*hiScale
+    },_scratch,{w:rasterW,h:rasterH});
+    task=started.task; /* 同期的に即代入(awaitより前) */
+    const res=await PdfRenderCore.finish(task);
+    if(task===started.task)task=null; /* 完了したので保持を解除(以降のhide()等が誤って再cancelしないように) */
+    if(res.cancelled||myVer!==ver)return false;
+    /* V5.51: 書込み内容もPDF下絵と同じ座標変換(started.vp.transform)で同じcanvasへ焼き込む。
+       annCvs(#cw内・低解像度でCSS拡大されぼやける)を隠し、この高解像度の合成結果だけを見せる。
+       既存のストロークデータ・座標系(strokes配列・DrawUtil.drawAnnotations自体)は無変更。 */
+    if(strokeArr&&strokeArr.length){
+      const sctx=_scratch.getContext('2d');
+      DrawUtil.drawAnnotations(sctx,strokeArr,started.vp.transform);
+    }
+    /* V5.56: 完成した_scratchを表示用canvas(c)へ一括転写(この瞬間だけcのサイズを合わせる) */
+    if(c.width!==_scratch.width||c.height!==_scratch.height){c.width=_scratch.width;c.height=_scratch.height;}
+    const cctx=c.getContext('2d');
+    cctx.clearRect(0,0,c.width,c.height);
+    cctx.drawImage(_scratch,0,0);
+    /* 位置/サイズ/表示切替をrender完了・バージョン確認後にまとめて確定(古い呼び出しの
+       完了で新しい位置設定が上書きされる不具合を防ぐため、displayと同じタイミングで反映) */
+    const x1r=Math.round(finalBox.left),y1r=Math.round(finalBox.top);
+    const x2r=Math.round(finalBox.left+finalBox.width),y2r=Math.round(finalBox.top+finalBox.height);
+    const outW=Math.max(1,x2r-x1r),outH=Math.max(1,y2r-y1r);
+    c.style.left=x1r+'px';c.style.top=y1r+'px';
+    c.style.width=outW+'px';c.style.height=outH+'px';
+    if(_pdfCvsRef)_pdfCvsRef.style.visibility='hidden';
+    /* V5.57バグ修正: 書込み確定のたびに走るこの処理が、直後に始まった次の書込み中に完了すると
+       annCvsを隠してしまい、今まさに描いている線が一瞬消える(→他の線もチラついて見える)
+       競合があった。描画中(keepAnnLive)は書込みレイヤーを隠さずそのまま残す。
+       次にこの処理が呼ばれた時(その書込みが完了した時)に改めて隠される。 */
+    if(_annCvsRef&&!keepAnnLive)_annCvsRef.style.visibility='hidden';
+    if(_cwRef)_cwRef.style.background='transparent';
+    c.style.display='block';
+    /* V5.48バグ修正: 記憶VIEW経由など、ジェスチャーを介さずに表示確定した直後は、
+       iPad(WebKit)でCanvasの更新がすぐ画面に反映されず、次のスクロール等の操作まで
+       古い見た目のまま残ることがある。強制的にレイアウトを読み取らせることで
+       即座に再描画させる(見た目には影響しない軽量な処理)。 */
+    void c.offsetWidth;
+    return true;
+  }
+  return{hide,cancel,reset,renderVisible};
+})();
 const IS_PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* V5.13: PC(マウス・キーボード)環境判定。iPad(タッチ)はfalse */
 const MAX_SUBWIN=2,MAX_STROKES_PER_PAGE=500;
 const SW_COLORS=['#f07800','#00a0ff','#00c060','#ff40a0','#c0c000'];
@@ -3236,6 +3378,11 @@ const App=(() => {
   let strokes={};
   let renderScale=1,cssExtraZoom=1;
   let curStroke=null,isDrawing=false,lastX=0,lastY=0;
+  let _inkSettleTimer=null;
+  function _inkSettleFire(){
+    if(isDrawing){clearTimeout(_inkSettleTimer);_inkSettleTimer=setTimeout(_inkSettleFire,500);return;} /* V5.58: 発火時にまだ描画中なら再スケジュール */
+    _refreshHiResVisible();
+  }
   /* v57: 手書き直線補正 (Line Assist) */
   const LINE_ASSIST_HOLD_MS=400; /* 保持時間(ms) — この間停止で直線化 */
   let _lineAssistTimer=null;     /* 保持検出タイマー */
@@ -3362,6 +3509,7 @@ const App=(() => {
   async function renderPage(num){
     if(!Logger.flags.pdfRender)return;
     if(!pdfDoc)return;
+    HiResView.hide(); /* V5.31: 描画やり直し中は古い高解像度オーバーレイを隠す */
     if(Logger.on)Logger.debug('[renderPage] page='+num+' scale='+scale.toFixed(3)+' dpr='+(window.devicePixelRatio||1).toFixed(2));
     const ver=++renderVer;
 
@@ -3435,7 +3583,57 @@ const App=(() => {
       _pgnEl.value=num;
       _zlblEl.textContent=Math.round(scale*100)+'%';
       TextSearch.renderTextLayer(page,vp,num).catch(()=>{}); /* V3.08: TextLayer */
+      _refreshHiResVisible(); /* V5.31: 表示範囲のみ高解像度化(既存座標系・処理には無影響の追加処理) */
     });
+  }
+
+  /* ============================================================
+     V5.31: 表示範囲のみ高解像度描画(画質改善)。既存の座標変数(panX/panY/scale/
+     renderScale/cssExtraZoom)を「読むだけ」で、一切書き換えない。_currentVP・
+     _getPdfPos等の座標系ロジックにも触れない。ジェスチャー中(パン/ピンチ/ホイール)は
+     呼ばれない(各操作の開始時にHiResView.hide()するのみ、終了後にのみこの関数を呼ぶ)。
+     ============================================================ */
+  async function _refreshHiResVisible(){
+    if(!pdfDoc||!_currentVP)return;
+    try{
+    /* V5.35: 「スキップしてよいか」の事前判定を撤去。
+       これまで判定条件の見落とし(小さいページ/記憶VIEW経由など)により発動しないケースが
+       繰り返し見つかったため、判定自体をやめて「ズーム操作の一段落後は必ず実行する」方式に
+       変更する。実行はジェスチャー終了時の1回だけなので、常時実行しても操作の軽快さには
+       影響しない(パン/ピンチ中に毎フレーム走るわけではない)。 */
+    if(scale<=1.0){HiResView.hide();return;} /* 等倍以下は元々鮮明なため対象外 */
+    const myPage=curPage,myScale=scale;
+    let page=_pageCache.get(myPage);
+    if(!page)page=await pdfDoc.getPage(myPage);
+    if(curPage!==myPage||scale!==myScale)return; /* 待っている間に状態が変わっていたら中断 */
+    const vp1=page.getViewport({scale:1});
+    /* 可視領域(caElビューポート全体)の四隅を「canvas-pixel-at-scale1」座標へ変換。
+       既存の_getPdfPosと同じ変換式(display_px→canvas_px)をscale1まで割り戻しているだけで、
+       _currentVP.transformやUtils.canvasToPdfは使用しない(座標系ロジックには一切触れない) */
+    const dX1=0,dY1=0,dX2=_caW||caEl.clientWidth,dY2=_caH||caEl.clientHeight;
+    const cx1=(dX1-panX)/cssExtraZoom/renderScale,cy1=(dY1-panY)/cssExtraZoom/renderScale;
+    const cx2=(dX2-panX)/cssExtraZoom/renderScale,cy2=(dY2-panY)/cssExtraZoom/renderScale;
+    const s1x1=Math.max(0,Math.min(cx1,cx2)),s1y1=Math.max(0,Math.min(cy1,cy2));
+    const s1x2=Math.min(vp1.width,Math.max(cx1,cx2)),s1y2=Math.min(vp1.height,Math.max(cy1,cy2));
+    if(s1x2-s1x1<=0||s1y2-s1y1<=0){HiResView.hide();return;} /* ページ範囲外 */
+    const dpr=Math.min(window.devicePixelRatio||1,PDF_MAX_DPR);
+    const hiScale=myScale*dpr; /* CSS拡大に頼らず必要な実解像度そのもので描画 */
+    const rectS1={x1:s1x1,y1:s1y1,x2:s1x2,y2:s1y2}; /* 実ラスタサイズ算出用 */
+    /* V5.42: 画面上の最終位置(#ca基準)。renderScale*cssExtraZoom=scale の関係を使い、
+       panX/panY(既存の読み取り専用の値)を加えるだけで#cw変換後の最終位置と一致する。 */
+    const finalBox={
+      left:panX+s1x1*myScale, top:panY+s1y1*myScale,
+      width:(s1x2-s1x1)*myScale, height:(s1y2-s1y1)*myScale
+    };
+    const strokeArr=strokes[myPage]||[]; /* V5.51: 書込み内容も一緒に高解像度化 */
+    const ok=await HiResView.renderVisible(caEl,page,rectS1,hiScale,finalBox,strokeArr,isDrawing); /* V5.57: 描画中は書込みレイヤーを隠さない */
+    if(ok&&(curPage!==myPage||scale!==myScale))HiResView.hide(); /* 描画完了までに状態が変わっていれば破棄 */
+    }catch(e){
+      /* V5.60バグ修正: 従来はここで例外が起きると未処理のPromise例外として握りつぶされ、
+         原因の切り分けが困難だった。ログに残した上でクッキリ表示を安全に隠す。 */
+      Logger.warn('[_refreshHiResVisible] エラー',e);
+      HiResView.hide();
+    }
   }
 
   /* --- 選択 --- */
@@ -3539,7 +3737,7 @@ const App=(() => {
     if(_activeTool!=='sub'){
       if(Utils.isPalmContact(t))return;
       if(!_isOnCanvas(t)){_startPan(t);return;}
-      const needPen=['pen','hl'].includes(_activeTool)&&_inputMode!=='finger'; /* V5.17: 手書きモードでは指もそのまま描画対象 */
+      const needPen=['pen','hl','eraser'].includes(_activeTool)&&_inputMode!=='finger'; /* V6.01: ペンモードでは消しゴムもペン専用に。手書きモードでは指もそのまま描画対象 */
       if(needPen&&t.touchType!=='stylus'){
         /* v61: 描画中(Pencil使用中)は指パンを完全禁止。
            非描画中でも PEN_PAN_THRESHOLD 分移動後にパン開始(誤反応防止) */
@@ -3659,6 +3857,7 @@ const App=(() => {
   caEl.addEventListener('wheel',e=>{
     if(!Logger.flags.wheelZoom){e.preventDefault();return;}
     if(!pdfDoc)return;e.preventDefault();
+    HiResView.hide(); /* V5.31: ホイール操作中は既存のCSS拡大表示に戻す */
     const k=e.deltaMode===1?16:e.deltaMode===2?caEl.clientHeight:1; /* 行/ページ単位ホイール対応 */
     if(IS_PC&&!(e.ctrlKey||e.metaKey)){
       /* V5.13①: ホイール=縦スクロール / Shift+ホイール=横スクロール */
@@ -3717,6 +3916,7 @@ const App=(() => {
   function _pinchMid(t){return{x:(t[0].clientX+t[1].clientX)/2,y:(t[0].clientY+t[1].clientY)/2};}
   function _startPinch(t){const m=_pinchMid(t),cr=caEl.getBoundingClientRect(),bx=m.x-cr.left,by=m.y-cr.top;cwEl.style.transformOrigin='0 0';/* v17: 先に確定 */pinch={d0:_pinchDist(t),s0:scale,target:scale,pdfX:(bx-panX)/scale,pdfY:(by-panY)/scale,cr};}
   function _movePinch(t){
+    HiResView.hide(); /* V5.31: ピンチ中は既存のCSS拡大表示に戻す(高解像度描画はしない) */
     const p=pinch,rawR=_pinchDist(t)/p.d0,m=_pinchMid(t);
     const cr=p.cr||(p.cr=caEl.getBoundingClientRect()); /* v10: rect キャッシュ */
     const M1x=m.x-cr.left,M1y=m.y-cr.top;
@@ -3747,6 +3947,7 @@ const App=(() => {
   function _startPan(t){panSt={x0:t.clientX,y0:t.clientY,px0:panX,py0:panY};velHist=[];}
   function _movePan(t){
     if(!panSt)return;
+    HiResView.hide(); /* V5.31: パン中は既存のCSS transform表示に戻す(高解像度描画はしない) */
     velHist.push({x:t.clientX,y:t.clientY,tm:Date.now()});if(velHist.length>6)velHist.shift();
     panX=panSt.px0+(t.clientX-panSt.x0);panY=panSt.py0+(t.clientY-panSt.y0);
     _clampPan(); /* 値クランプのみ (DOM更新はRAF) */
@@ -3759,16 +3960,28 @@ const App=(() => {
       let vx=(n.x-f.x)/dt*14,vy=(n.y-f.y)/dt*14;
       const step=()=>{
         if(!Logger.flags.raf)return;
-        if(Math.abs(vx)<.4&&Math.abs(vy)<.4)return;
+        if(Math.abs(vx)<.4&&Math.abs(vy)<.4){_refreshHiResVisible();return;} /* V5.31: 慣性が収まったら高解像度化 */
         panX+=vx;panY+=vy;_clampPan();_updateTransform();
         vx*=.9;vy*=.9;rafId=requestAnimationFrame(step);
       };
       rafId=requestAnimationFrame(step);
+    }else{
+      _refreshHiResVisible(); /* V5.31: 慣性の付かない短いパンは即座に高解像度化 */
     }
   }
 
   /* --- 描画 --- */
   function _startDraw(e){
+    /* V5.53バグ修正: V5.52ではHiResView.hide()で背景(PDF下絵)ごと低解像度に戻していたため、
+       書込み中は背景までボケて見えてしまっていた。サブ窓は背景と書込みが別レイヤーで常に
+       クッキリなことに倣い、背景(hiResCvs)はそのまま表示を維持し、書込みレイヤー(annCvs)だけを
+       一旦クリアしてから見せる(既存の線は既にhiResCvs側に焼き込み済みなので、annCvsを空の
+       状態から見せても二重表示にはならない)。HiResViewが元々非表示(等倍以下)の時は
+       annCvsは常に表示中のためこの分岐はスキップされ、既存の書込みが消えることはない。 */
+    if(annCvs.style.visibility==='hidden'){
+      annCtx.clearRect(0,0,annCvs.width,annCvs.height);
+      annCvs.style.visibility='';
+    }
     const t=e.touches?e.touches[0]:e;
     const p=_getPdfPos(t);
     /* v44: paste mode廃止 → duplicate-and-select方式 */
@@ -3885,6 +4098,7 @@ const App=(() => {
     if(!pdfDoc)return;
     const n=abs?Math.max(1,Math.min(totalPages,d)):curPage+d;
     if(n<1||n>totalPages)return;
+    clearTimeout(_inkSettleTimer); /* V5.60バグ修正: ページ切替時、旧ページ向けの保留中タイマーを破棄 */
     curPage=n;await renderPage(n);
     SubWinManager.updateAll(strokes,n);EventBus.emit('stroke:added');
   }
@@ -4066,6 +4280,7 @@ const App=(() => {
     Logger.info('[closeFile] resume keys cleared, file='+_closingFile);
     pdfDoc=null;origBuf=null;fileName='';curPage=1;totalPages=0;strokes={};_docId=null;
     [pdfCvs,annCvs,ovlCvs].forEach(c=>{c.width=1;c.height=1;c.style.width='';c.style.height='';}); /* V5.03 */
+    HiResView.reset(); /* V5.60バグ修正: クッキリ表示レイヤーの状態を確実にクリア(取り残し防止) */
     cwEl.style.display='none';
     _showHome();
     document.getElementById('fnlbl').textContent='ファイル未選択';
@@ -4365,7 +4580,7 @@ const App=(() => {
     document.getElementById('tpn').textContent=totalPages||'0';
     document.getElementById('pgn').value=curPage;
     if(pdfDoc){document.getElementById('dz').style.display='none';cwEl.style.display='block';await renderPage(curPage);}
-    else{_showHome();cwEl.style.display='none';document.getElementById('zlbl').textContent='--';[pdfCvs,annCvs,ovlCvs].forEach(c=>{c.width=1;c.height=1;c.style.width='';c.style.height='';});} /* V5.03 */
+    else{HiResView.reset();_showHome();cwEl.style.display='none';document.getElementById('zlbl').textContent='--';[pdfCvs,annCvs,ovlCvs].forEach(c=>{c.width=1;c.height=1;c.style.width='';c.style.height='';});} /* V5.03 / V5.60 */
   }
 
   /* --- 自動保存ゲッター --- */
@@ -4397,6 +4612,11 @@ const App=(() => {
     },300);
     redraw();                        /* v46: サブ窓操作→メイン窓へ即時反映 */
     SubWinManager.refreshAnnotations();
+    /* V5.58: 連続で書込み中はすり替え(クッキリ化)を一切行わず、手が止まってから
+       まとめて1回だけ行うよう変更。書込みのたびに毎回すり替えていたことが
+       チラつきの根本原因だったため、パン/ピンチと同様「操作の合間」にのみ実行する。 */
+    clearTimeout(_inkSettleTimer);
+    _inkSettleTimer=setTimeout(_inkSettleFire,500);
   });
   /* v8: PDF出力中はautosaveスキップ (メモリ競合防止) */
   EventBus.on('autosave:periodic',()=>{if(pdfDoc&&!_exportInProgress)AutoSave.schedSave(_getState);});
@@ -4457,9 +4677,13 @@ const App=(() => {
          旧キャンバスサイズで誤クランプが起き、ビュー位置がずれる(2回押し問題の根本原因)。
          二重RAFで「renderPageの全RAF完了」を待ち、その後にpanX/panYを再設定して正しいサイズでクランプする。 */
       await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+      /* V5.45バグ修正: HiResViewは#cwの外にあり#cwのtransformに連動しないため、
+         位置を再補正する前に一旦隠す(隠さないと補正前の位置に取り残されて表示が乱れる) */
+      HiResView.hide();
       panX=px;panY=py;scale=sc;   /* RAF中にclampで変わった可能性があるため再設定 */
       _clampPan();_updateTransform();
       _zlblEl.textContent=Math.round(scale*100)+'%';
+      _refreshHiResVisible(); /* V5.33: 記憶VIEW/検索ジャンプ後の最終位置で高解像度化をやり直す(位置補正で高解像度描画がズレたまま残るバグ修正) */
     },
     get docId(){return _docId;},
     /* v16: textX/textY削除 */
@@ -6274,6 +6498,12 @@ const TextSearch = (() => {
       e.stopPropagation(); _closeList();
     }, { passive: false });
 
+    document.getElementById('search-clear')?.addEventListener('click', e => {
+      e.stopPropagation();
+      if (_inputEl) { _inputEl.value = ''; _inputEl.focus(); }
+      clearTimeout(_debTimer);
+      _execSearch(); /* V5.54: 既存の空欄処理(候補一覧クローズ・ハイライト消去)をそのまま利用 */
+    }, { passive: false });
     if (_inputEl) {
       _inputEl.addEventListener('input', _onInput, { passive: true });
       _inputEl.addEventListener('keydown', e => {
