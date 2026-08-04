@@ -20,7 +20,15 @@ const IDBStore=(() => {
     return _db=await new Promise((res,rej)=>{
       const req=indexedDB.open(DB_NAME,DB_VER);
       req.onupgradeneeded=e=>e.target.result.createObjectStore(ST);
-      req.onsuccess=e=>res(e.target.result);
+      req.onsuccess=e=>{
+        const db=e.target.result;
+        /* V7.09: 接続が裏で切断された場合、_dbをリセットして次回_open()で必ず再接続させる
+           (iPad Safariがメモリ逼迫時に未使用のIDB接続を切ることがあり、
+            従来は壊れた接続を使い回し続けて永久に保存失敗していた) */
+        db.onclose=()=>{Logger.warn('[IDB] connection closed unexpectedly, will reconnect');_db=null;};
+        db.onversionchange=()=>{db.close();_db=null;};
+        res(db);
+      };
       req.onerror=e=>rej(e.target.error);
     });
   }
@@ -28,7 +36,14 @@ const IDBStore=(() => {
   async function _doWrite(pairs){
     const db=await _open();
     return new Promise((res,rej)=>{
-      const tx=db.transaction(ST,'readwrite');
+      let tx;
+      try{
+        tx=db.transaction(ST,'readwrite');
+      }catch(e){
+        /* V7.09: 閉じた接続に対するtransaction()は同期的に例外を投げる(InvalidStateError等)。
+           次回は必ず新しい接続を張り直す */
+        _db=null;rej(e);return;
+      }
       const st=tx.objectStore(ST);
       for(const[k,v]of pairs){
         if(v===null||v===undefined)st.delete(k);
@@ -58,7 +73,8 @@ const IDBStore=(() => {
         /* V7.08: 上限到達→諦めてキューを破棄。無限リトライによるCPU負荷を防止 */
         Logger.error('[IDB] flush failed '+MAX_RETRY+'回連続、保存を断念します',e);
         _queue.length=0;_retryCount=0;_flushing=false;
-        EventBus.emit('idb:saveFailed'); /* v7.08: UI側で警告表示できるように通知 */
+        /* V7.09: エラー種別を通知(容量不足かどうかで表示メッセージを変える) */
+        EventBus.emit('idb:saveFailed',{isQuota:e?.name==='QuotaExceededError'});
         return;
       }
       _queue.unshift(merged); /* 失敗時は先頭に戻す */
